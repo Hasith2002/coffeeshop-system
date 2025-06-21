@@ -8,7 +8,7 @@ package pos;
 
 /**
  *
- * @author SLTC
+ * @author hasith
  */
 public class Login extends javax.swing.JFrame {
 
@@ -38,6 +38,7 @@ public class Login extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel1.setFont(new java.awt.Font("Sitka Heading", 0, 18)); // NOI18N
         jLabel1.setText("Log in Application");
 
         jLabel2.setText("Username");

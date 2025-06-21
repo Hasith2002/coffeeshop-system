@@ -12,9 +12,7 @@ import pos.DBConnection;
 
 public class Customer extends javax.swing.JPanel {
 
-    /**
-     * Creates new form Customer
-     */
+   
     public Customer() {
         initComponents();
         TbCustomer.setModel(new DefaultTableModel(
@@ -48,26 +46,41 @@ public void searchCustomer() {
     String number = jTextField2.getText().trim();
 
     try {
+        DefaultTableModel dt = (DefaultTableModel) TbCustomer.getModel();
+        dt.setRowCount(0);
+
         Connection con = DBConnection.mycon();
-        String sql = "SELECT name, id, Number FROM customer WHERE name LIKE ? OR Number LIKE ?";
+
+        String sql = "SELECT * FROM customer WHERE 1=1";
+        if (!name.isEmpty()) {
+            sql += " AND name LIKE ?";
+        }
+        if (!number.isEmpty()) {
+            sql += " AND number LIKE ?";
+        }
+
         PreparedStatement pst = con.prepareStatement(sql);
-        pst.setString(1, "%" + name + "%");
-        pst.setString(2, "%" + number + "%");
+
+        int paramIndex = 1;
+        if (!name.isEmpty()) {
+            pst.setString(paramIndex++, "%" + name + "%");
+        }
+        if (!number.isEmpty()) {
+            pst.setString(paramIndex++, "%" + number + "%");
+        }
 
         ResultSet rs = pst.executeQuery();
-        DefaultTableModel model = (DefaultTableModel) TbCustomer.getModel();
-        model.setRowCount(0); // Clear old rows
 
         while (rs.next()) {
-            Vector<String> row = new Vector<>();
-            row.add(rs.getString("Name"));
-            row.add(String.valueOf(rs.getInt("Id")));
-            row.add(rs.getString("Number"));
-            model.addRow(row);
+            Vector v = new Vector();
+            v.add(rs.getString("name"));
+            v.add(rs.getString("id"));
+            v.add(rs.getString("number"));
+            dt.addRow(v);
         }
 
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error while searching: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Error during search: " + e.getMessage());
         e.printStackTrace();
     }
 }
@@ -90,10 +103,16 @@ public void searchCustomer() {
         jScrollPane1 = new javax.swing.JScrollPane();
         TbCustomer = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
 
         jButton3.setText("Delete");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jLabel1.setText("Name");
+        jLabel1.setText("Customer Name");
 
         jButton1.setText("Save");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -102,7 +121,7 @@ public void searchCustomer() {
             }
         });
 
-        jLabel2.setText("Number");
+        jLabel2.setText("Customer Number");
 
         TbCustomer.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -123,6 +142,13 @@ public void searchCustomer() {
             }
         });
 
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,26 +156,30 @@ public void searchCustomer() {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)
-                        .addGap(20, 20, 20)
-                        .addComponent(jButton3))
+                        .addGap(26, 26, 26)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(49, 49, 49))
-                            .addComponent(jLabel2))
-                        .addGap(79, 79, 79)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                            .addComponent(jTextField1)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton2)
+                                .addGap(20, 20, 20)
+                                .addComponent(jButton3)
+                                .addGap(88, 88, 88)
+                                .addComponent(btnReset))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(49, 49, 49))
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextField2)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(57, 57, 57)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -167,10 +197,11 @@ public void searchCustomer() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton3)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(btnReset))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -193,7 +224,7 @@ try {
     
     if (rowsInserted > 0) {
         JOptionPane.showMessageDialog(this, "Customer saved successfully!");
-        tb_load(); // refresh table
+        tb_load(); 
         jTextField1.setText("");
         jTextField2.setText("");
     }
@@ -208,9 +239,52 @@ try {
         searchCustomer();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+       int selectedRow = TbCustomer.getSelectedRow();
+
+if (selectedRow == -1) {
+    JOptionPane.showMessageDialog(this, "Please select a customer to delete.");
+    return;
+}
+
+
+String id = TbCustomer.getValueAt(selectedRow, 1).toString(); 
+
+int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this customer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+if (confirm == JOptionPane.YES_OPTION) {
+    try {
+        Connection con = DBConnection.mycon();
+        String sql = "DELETE FROM customer WHERE id = ?";
+        PreparedStatement pst = con.prepareStatement(sql);
+        pst.setString(1, id);
+        
+        int rowsDeleted = pst.executeUpdate();
+
+        if (rowsDeleted > 0) {
+            JOptionPane.showMessageDialog(this, "Customer deleted successfully!");
+            tb_load(); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Customer not found.");
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error deleting customer: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+          jTextField1.setText("");
+        jTextField2.setText("");
+        tb_load();
+    }//GEN-LAST:event_btnResetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TbCustomer;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

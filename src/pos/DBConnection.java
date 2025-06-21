@@ -20,7 +20,7 @@ public class DBConnection {
             {
                 System.out.println("Database connection failed: " + e.getMessage());
                 return conn;
-            }
+            } 
     }
    
 }
